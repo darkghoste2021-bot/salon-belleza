@@ -56,9 +56,14 @@
       border-radius: 8px;
       cursor: pointer;
       margin-top: 20px;
+      transition: background 0.2s ease;
     }
     button:hover {
       background-color: #C87796;
+    }
+    button:disabled {
+      background-color: #e3b3c2;
+      cursor: not-allowed;
     }
     .message {
       text-align: center;
@@ -83,7 +88,7 @@
       <label for="fechaCumple">Fecha de cumpleaños</label>
       <input type="date" id="fechaCumple" name="FechaCumpleaños" required />
 
-      <button type="submit">Enviar registro</button>
+      <button type="button" id="enviarBtn" onclick="enviarFormulario()">Enviar registro</button>
     </form>
 
     <p id="respuesta" class="message"></p>
@@ -92,11 +97,15 @@
   <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbweZDpw26HiWm5C_dXcGtpYb7xsAqeF4MH1ENA24YtsIYUBvobqUoG6BF_1WhpcW2WvsA/exec';
 
-    const form = document.getElementById('registroForm');
-    const respuestaPara = document.getElementById('respuesta');
+    function enviarFormulario() {
+      const form = document.getElementById('registroForm');
+      const respuestaPara = document.getElementById('respuesta');
+      const boton = document.getElementById('enviarBtn');
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
+      boton.disabled = true;
+      boton.textContent = 'Enviando...';
+      respuestaPara.textContent = '';
+
       fetch(scriptURL, { method: 'POST', body: new FormData(form) })
         .then(response => {
           if (response.ok) {
@@ -109,8 +118,12 @@
         .catch(error => {
           console.error('Error!', error.message);
           respuestaPara.textContent = 'Error de conexión. Intenta de nuevo más tarde.';
+        })
+        .finally(() => {
+          boton.disabled = false;
+          boton.textContent = 'Enviar registro';
         });
-    });
+    }
   </script>
 </body>
 </html>
