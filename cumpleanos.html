@@ -7,72 +7,59 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #FFEFF3;
+      background-color: #FFF4F7;
       margin: 0;
       padding: 0;
       color: #4A4A4A;
     }
-
     .container {
       max-width: 600px;
       margin: 60px auto;
       padding: 24px;
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-
     h1 {
       text-align: center;
-      color: #E79BB1;
+      color: #D98BA3;
       margin-bottom: 20px;
       font-size: 26px;
     }
-
     .cliente {
-      border-bottom: 1px solid #f2f2f2;
+      border-bottom: 1px solid #eee;
       padding: 14px 0;
     }
-
     .cliente:last-child {
       border-bottom: none;
     }
-
     .nombre {
       font-size: 18px;
       font-weight: 600;
-      color: #333;
-      margin-bottom: 4px;
+      margin: 0;
     }
-
     .telefono {
       color: #777;
-      margin: 4px 0;
+      margin: 6px 0 10px;
     }
-
-    .boton-wsp {
+    .whatsapp-btn {
       display: inline-block;
-      margin-top: 8px;
-      padding: 8px 14px;
       background-color: #25D366;
       color: white;
       text-decoration: none;
+      padding: 10px 16px;
       border-radius: 8px;
-      font-size: 15px;
       font-weight: 500;
-      transition: background 0.2s ease, transform 0.1s ease;
+      font-size: 14px;
+      transition: 0.2s;
     }
-
-    .boton-wsp:hover {
-      background-color: #1EBE5C;
-      transform: scale(1.05);
+    .whatsapp-btn:hover {
+      background-color: #1EBE5B;
     }
-
     .mensaje {
       text-align: center;
-      margin-top: 24px;
+      margin-top: 20px;
       color: #999;
-      font-size: 16px;
     }
   </style>
 </head>
@@ -84,7 +71,7 @@
   </div>
 
   <script>
-    // URL de tu Apps Script
+    // 👇 Pega aquí tu nueva URL del Apps Script publicada
     const scriptURL = 'https://script.google.com/macros/s/AKfycby95rZ5TXDPgENbcPdFBCAps-7jEat2XAklqQ1LGFKIffpS44NTXOSnr9SEhEw8HZEe2Q/exec';
 
     fetch(scriptURL)
@@ -106,28 +93,23 @@
           mensaje.textContent = "🎈 No hay cumpleaños registrados para hoy.";
         } else {
           cumpleaneros.forEach(c => {
+            const telefono = c.Telefono ? c.Telefono.toString().replace(/\D/g, '') : '';
+            const mensajeWA = encodeURIComponent(`🎉 ¡Hola ${c.Nombre}! En [Nombre del Salón] queremos desearte un muy feliz cumpleaños 🎂. Que tu día esté lleno de belleza, alegría y muchas sonrisas 💖`);
+            const linkWA = telefono ? `https://wa.me/502${telefono}?text=${mensajeWA}` : null;
+
             const div = document.createElement('div');
             div.className = 'cliente';
-
-            const telefono = c.Telefono ? c.Telefono.replace(/\D/g, '') : '';
-            const mensajeWsp = `🎉 ¡Feliz cumpleaños ${c.Nombre}! 🎂%0ADeseamos que tengas un día maravilloso lleno de belleza, alegría y sonrisas 💕✨ — Tu equipo de confianza 💇‍♀️💅`;
-
-            // Si no tiene código de país, lo agregamos automáticamente (Guatemala: 502)
-            const numeroFinal = telefono.startsWith("502") ? telefono : `502${telefono}`;
-            const linkWhatsApp = `https://wa.me/${numeroFinal}?text=${mensajeWsp}`;
-
             div.innerHTML = `
               <p class="nombre">${c.Nombre}</p>
               <p class="telefono">📱 ${telefono || "Sin número"}</p>
-              ${telefono ? `<a href="${linkWhatsApp}" target="_blank" class="boton-wsp">💌 Enviar felicitación</a>` : ''}
+              ${linkWA ? `<a class="whatsapp-btn" href="${linkWA}" target="_blank">Enviar felicitación 💌</a>` : ''}
             `;
-
             lista.appendChild(div);
           });
         }
       })
       .catch(err => {
-        console.error('Error al cargar datos:', err);
+        console.error('Error al conectar:', err);
         document.getElementById('mensaje').textContent = "Error al conectar con el servidor.";
       });
   </script>
