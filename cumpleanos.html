@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes que cumplen años hoy 🎉</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #FFF4F7;
+      margin: 0;
+      padding: 0;
+      color: #4A4A4A;
+    }
+    .container {
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h1 {
+      text-align: center;
+      color: #D98BA3;
+      margin-bottom: 20px;
+    }
+    .cliente {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .cliente:last-child {
+      border-bottom: none;
+    }
+    .nombre {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .telefono {
+      color: #777;
+    }
+    .mensaje {
+      text-align: center;
+      margin-top: 20px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎂 Cumpleañeros de hoy</h1>
+    <div id="listaCumple"></div>
+    <p id="mensaje" class="mensaje"></p>
+  </div>
+
+  <script>
+    // 👇 pon aquí tu URL de Apps Script
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwv1_AkDZIed-6u0HrnTUB4y8oIE_5JpPQU8yWnaKZhvlBcBH6kHBRx_tuEDGMzRAu3pA/exec';
+
+    fetch(scriptURL)
+      .then(response => response.json())
+      .then(data => {
+        const hoy = new Date();
+        const dia = hoy.getDate();
+        const mes = hoy.getMonth() + 1;
+
+        const lista = document.getElementById('listaCumple');
+        const mensaje = document.getElementById('mensaje');
+
+        const cumpleaneros = data.filter(cliente => {
+          const fecha = new Date(cliente["Fecha de Cumpleaños"]);
+          return fecha.getDate() === dia && (fecha.getMonth() + 1) === mes;
+        });
+
+        if (cumpleaneros.length === 0) {
+          mensaje.textContent = "🎈 No hay cumpleaños registrados para hoy.";
+        } else {
+          cumpleaneros.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'cliente';
+            div.innerHTML = `
+              <p class="nombre">${c.Nombre}</p>
+              <p class="telefono">📱 ${c.Telefono || "Sin número"}</p>
+            `;
+            lista.appendChild(div);
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Error al cargar datos:', err);
+        document.getElementById('mensaje').textContent = "Error al conectar con el servidor.";
+      });
+  </script>
+</body>
+</html>
