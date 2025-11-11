@@ -3,121 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes que cumplen años hoy 🎉</title>
+  <title>Cumpleañeros de Hoy 🎂</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #FFF4F7;
-      margin: 0;
-      padding: 0;
-      color: #4A4A4A;
-    }
-    .container {
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 24px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background-color: #fff8f0;
+      color: #333;
+      text-align: center;
+      padding: 20px;
     }
     h1 {
-      text-align: center;
-      color: #D98BA3;
+      color: #e67e22;
+      font-size: 28px;
       margin-bottom: 20px;
     }
-    .cliente {
-      border-bottom: 1px solid #eee;
-      padding: 14px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 95%;
+      max-width: 600px;
+      background-color: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
     }
-    .cliente:last-child {
-      border-bottom: none;
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #f2f2f2;
     }
-    .nombre {
-      font-size: 18px;
-      font-weight: 600;
+    th {
+      background-color: #f39c12;
+      color: white;
+      font-size: 16px;
     }
-    .telefono {
-      color: #777;
-      margin-top: 4px;
+    tr:hover {
+      background-color: #fdf2e9;
     }
     button {
-      background-color: #D98BA3;
+      background-color: #25D366;
       color: white;
       border: none;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.3s;
     }
     button:hover {
-      background-color: #C87796;
+      background-color: #1ebd5a;
     }
-    .mensaje {
-      text-align: center;
+    .no-cumple {
+      font-size: 18px;
+      color: #888;
       margin-top: 20px;
-      color: #999;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎂 Cumpleañeros de Hoy</h1>
-    <div id="listaCumple"></div>
-    <p id="mensaje" class="mensaje"></p>
-  </div>
+  <h1>🎂 Cumpleañeros de Hoy</h1>
+  <div id="cumpleTable"></div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwGMBgkmybMGYwoofDNEIec-0DmhEv0S8LVuTLt5InDlyYp2yOwaTr1-rsYFKPYo2R2fw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxL_g98JruTX2ypfg0QHoA1MdBs3UYP_6k1VGCyIcgkXtNoIde54p6BMf0GHtSAU68XFw/exec";
 
-    fetch(scriptURL)
-      .then(response => response.json())
-      .then(data => {
+    async function cargarCumpleaneros() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
         const hoy = new Date();
         const dia = hoy.getDate();
         const mes = hoy.getMonth() + 1;
-        const lista = document.getElementById("listaCumple");
-        const mensaje = document.getElementById("mensaje");
 
-        const cumpleaneros = data.filter(cliente => {
-          const fecha = new Date(cliente["Fecha de Cumpleaños"]);
-          return fecha.getDate() === dia && (fecha.getMonth() + 1) === mes;
+        const cumpleHoy = data.filter(cliente => {
+          if (!cliente["Fecha de Cumpleaños"]) return false;
+          const partes = cliente["Fecha de Cumpleaños"].split("-");
+          const año = partes[0];
+          const mesCumple = parseInt(partes[1]);
+          const diaCumple = parseInt(partes[2]);
+          return diaCumple === dia && mesCumple === mes;
         });
 
-        if (cumpleaneros.length === 0) {
-          mensaje.textContent = "🎈 No hay cumpleaños registrados para hoy.";
-        } else {
-          cumpleaneros.forEach(c => {
-            const numero = (c.Telefono || "").replace(/\D/g, "");
-            const mensajeWhatsApp = encodeURIComponent(
-              `🎉 ¡Hola ${c.Nombre}! En *Salón The Twins* queremos desearte un muy feliz cumpleaños 💕. Que tu día esté lleno de belleza, alegría y muchas sonrisas ✨💅`
-            );
-            const urlWhatsApp = `https://wa.me/502${numero}?text=${mensajeWhatsApp}`;
-
-            const div = document.createElement("div");
-            div.className = "cliente";
-            div.innerHTML = `
-              <div>
-                <p class="nombre">${c.Nombre}</p>
-                <p class="telefono">📱 ${c.Telefono || "Sin número"}</p>
-              </div>
-              ${
-                numero
-                  ? `<button onclick="window.open('${urlWhatsApp}', '_blank')">💌 Enviar mensaje</button>`
-                  : ""
-              }
-            `;
-            lista.appendChild(div);
-          });
+        if (cumpleHoy.length === 0) {
+          document.getElementById("cumpleTable").innerHTML = <p class="no-cumple">🎈 Hoy no hay cumpleañeros</p>;
+          return;
         }
-      })
-      .catch(err => {
-        console.error("Error al conectar con el servidor:", err);
-        document.getElementById("mensaje").textContent = "❌ Error al conectar con el servidor.";
-      });
+
+        let tabla = `
+          <table>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Acción</th>
+            </tr>
+        `;
+
+        cumpleHoy.forEach(cliente => {
+          const nombre = cliente.Nombre || "Sin nombre";
+          const telefono = cliente.Telefono ? cliente.Telefono.replace(/\D/g, '') : '';
+          const mensaje = encodeURIComponent(🎉 ¡Feliz cumpleaños ${nombre}! 🎂 Te deseamos un excelente día lleno de alegría y éxito.);
+          const enlaceWhatsApp = telefono ? https://wa.me/502${telefono}?text=${mensaje} : "#";
+
+          tabla += `
+            <tr>
+              <td>${nombre}</td>
+              <td>${telefono ? telefono : "📱 Sin número"}</td>
+              <td>
+                ${telefono ? <button onclick="window.open('${enlaceWhatsApp}', '_blank')">Enviar felicitación 🎉</button> : ""}
+              </td>
+            </tr>
+          `;
+        });
+
+        tabla += "</table>";
+        document.getElementById("cumpleTable").innerHTML = tabla;
+
+      } catch (error) {
+        document.getElementById("cumpleTable").innerHTML = "<p class='no-cumple'>❌ Error al conectar con el servidor.</p>";
+        console.error(error);
+      }
+    }
+
+    cargarCumpleaneros();
   </script>
 </body>
 </html>
