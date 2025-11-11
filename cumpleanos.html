@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes que cumplen años hoy 🎉</title>
+  <title>🎂 Cumpleañeros de hoy</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #FFF4F7;
+      background-color: #FFEFF3;
       margin: 0;
       padding: 0;
       color: #4A4A4A;
@@ -24,9 +24,9 @@
 
     h1 {
       text-align: center;
-      color: #D98BA3;
+      color: #E79BB1;
       margin-bottom: 20px;
-      font-size: 28px;
+      font-size: 26px;
     }
 
     .cliente {
@@ -42,18 +42,12 @@
       font-size: 18px;
       font-weight: 600;
       color: #333;
+      margin-bottom: 4px;
     }
 
     .telefono {
       color: #777;
-      margin: 6px 0;
-    }
-
-    .mensaje {
-      text-align: center;
-      margin-top: 24px;
-      color: #999;
-      font-size: 16px;
+      margin: 4px 0;
     }
 
     .boton-wsp {
@@ -73,6 +67,13 @@
       background-color: #1EBE5C;
       transform: scale(1.05);
     }
+
+    .mensaje {
+      text-align: center;
+      margin-top: 24px;
+      color: #999;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -83,7 +84,7 @@
   </div>
 
   <script>
-    // 👇 URL de tu Apps Script (ajústala si cambias el script)
+    // URL de tu Apps Script
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzQkw-6cfzLMXBe9alCJBBXlhN7Mqjz24meZvkAy2-TBn6FV8yDk_lRMSuco8hvy0DNtQ/exec';
 
     fetch(scriptURL)
@@ -108,9 +109,12 @@
             const div = document.createElement('div');
             div.className = 'cliente';
 
-            const mensajeWsp = `🎉 ¡Feliz cumpleaños ${c.Nombre}! 🎂%0ADe parte del equipo del salón, te deseamos un día lleno de belleza y alegría 💕✨`;
             const telefono = c.Telefono ? c.Telefono.replace(/\D/g, '') : '';
-            const linkWhatsApp = telefono ? `https://wa.me/502${telefono}?text=${mensajeWsp}` : '#';
+            const mensajeWsp = `🎉 ¡Feliz cumpleaños ${c.Nombre}! 🎂%0ADeseamos que tengas un día maravilloso lleno de belleza, alegría y sonrisas 💕✨ — Tu equipo de confianza 💇‍♀️💅`;
+
+            // Si no tiene código de país, lo agregamos automáticamente (Guatemala: 502)
+            const numeroFinal = telefono.startsWith("502") ? telefono : `502${telefono}`;
+            const linkWhatsApp = `https://wa.me/${numeroFinal}?text=${mensajeWsp}`;
 
             div.innerHTML = `
               <p class="nombre">${c.Nombre}</p>
