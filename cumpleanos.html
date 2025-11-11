@@ -77,6 +77,7 @@
         const cumpleHoy = data.filter(cliente => {
           if (!cliente["Fecha de Cumpleaños"]) return false;
           const partes = cliente["Fecha de Cumpleaños"].split("-");
+          const año = partes[0];
           const mesCumple = parseInt(partes[1]);
           const diaCumple = parseInt(partes[2]);
           return diaCumple === dia && mesCumple === mes;
@@ -99,10 +100,7 @@
         cumpleHoy.forEach(cliente => {
           const nombre = cliente.Nombre || "Sin nombre";
           const telefono = cliente.Telefono ? cliente.Telefono.replace(/\D/g, '') : '';
-          
-          // 🎉 Mensaje personalizado con el nombre del salón
-          const mensajePersonalizado = `¡Hola ${nombre}! 🎉 En Salón The Twins queremos desearte un muy feliz cumpleaños 🎂. Que tu día esté lleno de belleza, alegría y muchas sonrisas 😊`;
-          const mensaje = encodeURIComponent(mensajePersonalizado.trim());
+          const mensaje = encodeURIComponent(`🎉 ¡Feliz cumpleaños ${nombre}! 🎂 Te deseamos un excelente día lleno de alegría y éxito.`);
           const enlaceWhatsApp = telefono ? `https://wa.me/502${telefono}?text=${mensaje}` : "#";
 
           tabla += `
